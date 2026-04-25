@@ -1,0 +1,23 @@
+{
+  "name": "cassiniatb",
+  "version": "1.0.0",
+  "homepage": "http://github.com/wearefractal/bank",
+  "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
+  "main": "./index.js",
+  "dependencies": {
+    "request": "^2.30.0"
+  },
+  "engines": {
+    "node": ">= 0.4.0"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/wearefractal/bank/raw/master/LICENSE"
+    }
+  ],
+  "devDependencies": {
+    "async": "~0.2.9"
+  },
+  "private": true
+}
