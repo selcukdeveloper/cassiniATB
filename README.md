@@ -219,8 +219,6 @@ If you're cloning this and standing up your own backend:
 5. **Demo seed data** — claims + ratings on Kristiansand-area lakes; see the seed SQL block from the development conversation.
 6. Copy **Settings → API → Project URL** and **anon (public) key** into your `.env`.
 
-> **The anon key is safe to ship in the app bundle** — it's the public client key meant for end users. Never put the _service-role_ key in the app or in git.
-
 ---
 
 ## Cloudflare R2 setup
