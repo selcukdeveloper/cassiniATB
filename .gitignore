@@ -57,3 +57,6 @@ assets/lakes.json
 .env
 pass.json
 
+
+# Claude Code local config (not shared)
+.claude/
