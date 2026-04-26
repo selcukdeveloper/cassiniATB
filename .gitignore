@@ -10,6 +10,7 @@ web-build/
 expo-env.d.ts
 
 # Native
+.kotlin/
 *.orig.*
 *.jks
 *.p8
@@ -36,3 +37,23 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# generated native folders
+/ios
+/android
+
+# raw DEM data + generated tiles (host externally, don't commit)
+*.tif
+tiles/
+
+# Copernicus EU-Hydro (and other source datasets) — large, regenerate from upstream
+data/
+
+# Lakes GeoJSON is now fetched at runtime (R2 in prod, local tile server in dev)
+# rather than bundled — keep it out of git.
+assets/lakes.json
+
+# secrets
+.env
+pass.json
+

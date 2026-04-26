@@ -1,93 +1,50 @@
-[![NPM version](https://badge.fury.io/js/bank.png)](http://badge.fury.io/js/bank)
+# Welcome to your Expo app 👋
 
-## Information
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-<table>
-<tr> 
-<td>Package</td><td>bank</td>
-</tr>
-<tr>
-<td>Description</td>
-<td>simple.com API client</td>
-</tr>
-<tr>
-<td>Node Version</td>
-<td>>= 0.4</td>
-</tr>
-</table>
+## Get started
 
-## Usage
+1. Install dependencies
 
-```javascript
-var bank = require('bank');
+   ```bash
+   npm install
+   ```
 
-var opt = {
-  username: 'test',
-  password: 'testing123'
-};
+2. Start the app
 
-var acct = bank.account(opt);
+   ```bash
+   npx expo start
+   ```
 
-// login before doing anything
-acct.login(function(err){
-  
-});
+In the output, you'll find options to open the app in a
 
-// get info about your card
-// does not give the whole number
-acct.card(function(err, card){
-  console.log('card', card);
-});
+- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-// get your current account balances
-acct.balance(function(err, balance){
-  console.log('balance', balance);
-});
+You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-// get information about your linked accounts
-// soon you will be able to trigger transfers
-// to and from these
-acct.external(function(err, accts){
-  console.log('linked accounts', accts);
-});
+## Get a fresh project
 
-// get a list of all transactions
-// includes name, addr, amount, tip, coordinates, time, etc.
-acct.transactions(function(err, trans){
-  console.log('transactions', trans);
-});
+When you're ready, run:
 
-// this isnt really all that useful
-acct.logout(function(err){
-
-});
+```bash
+npm run reset-project
 ```
 
-## Examples
+This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-You can view more examples in the [example folder.](https://github.com/wearefractal/bank/tree/master/examples)
+## Learn more
 
-## LICENSE
+To learn more about developing your project with Expo, look at the following resources:
 
-(MIT License)
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
-Copyright (c) 2013 Fractal <contact@wearefractal.com>
+## Join the community
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+Join our community of developers creating universal apps.
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
+- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
