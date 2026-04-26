@@ -29,14 +29,15 @@ Copernicus EU-Hydro (lake polygons) as the backing geographic data.
 
 ## What the app does
 
-| Tab | Purpose |
-|---|---|
-| **Map** | Norway map, every lake polygon. Tap a lake → see who owns it + average drinkability rating. **Rate** it (1-5 stars) or **Test water & claim** it (opens QR scanner). |
-| **My Claims** | Lakes you've **verified** (real ownership). Each row shows expiration countdown. |
-| **Verification** | Scans you've submitted that are **pending** approval (or that were **rejected**). Disappear from here once approved. |
-| **Leaderboard** | Top players ranked by count of active *verified* claims. |
+| Tab              | Purpose                                                                                                                                                              |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Map**          | Norway map, every lake polygon. Tap a lake → see who owns it + average drinkability rating. **Rate** it (1-5 stars) or **Test water & claim** it (opens QR scanner). |
+| **My Claims**    | Lakes you've **verified** (real ownership). Each row shows expiration countdown.                                                                                     |
+| **Verification** | Scans you've submitted that are **pending** approval (or that were **rejected**). Disappear from here once approved.                                                 |
+| **Leaderboard**  | Top players ranked by count of active _verified_ claims.                                                                                                             |
 
 Capture-the-flag rules:
+
 - Scan a kit's QR on a lake → row inserted into `water_claims` with `status = 'pending'`.
 - Pending claims are **invisible** on the map and **don't count** for the leaderboard.
 - An admin (later: automated check) flips status to `verified`. The polygon now colours in your flag colour, you appear on the leaderboard, and the row moves from Verification → My Claims.
@@ -47,18 +48,18 @@ Capture-the-flag rules:
 
 ## Tech stack
 
-| Layer | Choice |
-|---|---|
-| Mobile framework | [Expo SDK 54](https://expo.dev) (React Native 0.81, React 19) |
-| Language | TypeScript |
-| Routing | [Expo Router](https://docs.expo.dev/router/introduction/) (file-based, bottom tabs + modal stacks) |
-| Map | [`react-native-maps`](https://github.com/react-native-maps/react-native-maps) — Apple Maps / Google Maps base, custom `<Polygon>` overlays |
-| QR scanner | [`expo-camera`](https://docs.expo.dev/versions/latest/sdk/camera/) `CameraView` with `barcodeScannerSettings` |
-| Photo picker | [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/) (currently optional/unused) |
-| Backend | [Supabase](https://supabase.com): Postgres + Row-Level Security + Auth + Realtime + Storage |
-| Auth | Email + password, demo accounts seeded via Auth dashboard |
-| Static asset host | [Cloudflare R2](https://developers.cloudflare.com/r2/) (S3-compatible, free egress, public bucket via `pub-*.r2.dev`) |
-| Bundler | Metro |
+| Layer             | Choice                                                                                                                                     |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Mobile framework  | [Expo SDK 54](https://expo.dev) (React Native 0.81, React 19)                                                                              |
+| Language          | TypeScript                                                                                                                                 |
+| Routing           | [Expo Router](https://docs.expo.dev/router/introduction/) (file-based, bottom tabs + modal stacks)                                         |
+| Map               | [`react-native-maps`](https://github.com/react-native-maps/react-native-maps) — Apple Maps / Google Maps base, custom `<Polygon>` overlays |
+| QR scanner        | [`expo-camera`](https://docs.expo.dev/versions/latest/sdk/camera/) `CameraView` with `barcodeScannerSettings`                              |
+| Photo picker      | [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/) (currently optional/unused)                                  |
+| Backend           | [Supabase](https://supabase.com): Postgres + Row-Level Security + Auth + Realtime + Storage                                                |
+| Auth              | Email + password, demo accounts seeded via Auth dashboard                                                                                  |
+| Static asset host | [Cloudflare R2](https://developers.cloudflare.com/r2/) (S3-compatible, free egress, public bucket via `pub-*.r2.dev`)                      |
+| Bundler           | Metro                                                                                                                                      |
 
 Runs in **Expo Go** on a physical iPhone over LAN — no dev build required.
 
@@ -118,10 +119,11 @@ Runs in **Expo Go** on a physical iPhone over LAN — no dev build required.
 **Why "star":**
 
 - One central dimension (`profiles`) joined to several fact tables.
-- `lake_id` is a *degenerate* dimension — the values exist in every fact, but the lake "table" itself is the GeoJSON file in R2. The app does the join in JS by indexing the GeoJSON on `LAKID` (see [`lib/lake-display.ts`](lib/lake-display.ts) and [`components/LakesLayer.tsx`](components/LakesLayer.tsx)).
+- `lake_id` is a _degenerate_ dimension — the values exist in every fact, but the lake "table" itself is the GeoJSON file in R2. The app does the join in JS by indexing the GeoJSON on `LAKID` (see [`lib/lake-display.ts`](lib/lake-display.ts) and [`components/LakesLayer.tsx`](components/LakesLayer.tsx)).
 - Two precomputed analytical views (`leaderboard`, `lake_rating_summary`) sit off the side — read-only, no writes flow back to them.
 
 Row-Level Security is enabled on every fact table:
+
 - Anyone can `SELECT` (so the map and leaderboard work for unauthenticated viewers if we add them).
 - Only authenticated users can `INSERT` rows where `user_id = auth.uid()`.
 - The `claim_lake(text, text)` Postgres function is `SECURITY DEFINER` and performs the upsert atomically. Clients call it via `supabase.rpc('claim_lake', …)`.
@@ -191,19 +193,6 @@ cd cassiniATB
 npm install
 ```
 
-Create a `.env` in the project root (gitignored — never commit it):
-
-```env
-# Lakes GeoJSON URL (R2 public bucket; or fall back to local Python tile server)
-EXPO_PUBLIC_LAKES_URL=https://pub-XXXXXXXXXXXX.r2.dev/lakes.json
-
-# Supabase project URL + anon (public) key — Settings → API
-EXPO_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT-REF.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
-```
-
-Without these, the app starts but auth and map polygons won't work.
-
 ### Run
 
 ```sh
@@ -223,14 +212,14 @@ If you're cloning this and standing up your own backend:
    - `profiles`, `water_claims`, `claim_samples` tables + RLS policies
    - `lake_ratings` table + `lake_rating_summary` view
    - `claim_lake(p_lake_id text, p_verification_code text)` RPC (`SECURITY DEFINER`, upserts via `ON CONFLICT (lake_id) DO UPDATE`)
-   - `leaderboard` view (per-profile count of active *verified* claims)
+   - `leaderboard` view (per-profile count of active _verified_ claims)
 3. **Storage bucket** — Storage → New bucket: `samples` · Public: on.
 4. **Demo users** — Authentication → Users → Add user, with "Auto Confirm Email" ticked:
    - `selcuk@dev.no`, `ingrid@phd.no`, `alice@cassini.test`, `bob@cassini.test`, `carol@cassini.test`.
 5. **Demo seed data** — claims + ratings on Kristiansand-area lakes; see the seed SQL block from the development conversation.
 6. Copy **Settings → API → Project URL** and **anon (public) key** into your `.env`.
 
-> **The anon key is safe to ship in the app bundle** — it's the public client key meant for end users. Never put the *service-role* key in the app or in git.
+> **The anon key is safe to ship in the app bundle** — it's the public client key meant for end users. Never put the _service-role_ key in the app or in git.
 
 ---
 
@@ -240,13 +229,15 @@ R2 hosts two things: the hillshade tile pyramid and `lakes.json`.
 
 1. **Account + bucket:** <https://dash.cloudflare.com> → R2 Object Storage → Create bucket → name `cassini-hillshade`.
 2. **Public access:** Settings → Public Access → "R2.dev subdomain" → **Allow Access**. Note the URL `https://pub-XXXX.r2.dev` — this is what `EXPO_PUBLIC_LAKES_URL` and (if re-enabled) `EXPO_PUBLIC_HILLSHADE_URL` point at.
-3. **API token:** Manage API Tokens → Create → "Object Read & Write" on this bucket. Copy *Access Key ID*, *Secret Access Key*, and the *S3 Endpoint URL*.
+3. **API token:** Manage API Tokens → Create → "Object Read & Write" on this bucket. Copy _Access Key ID_, _Secret Access Key_, and the _S3 Endpoint URL_.
 4. **rclone:** `rclone config` → New remote → name `r2` → Storage `s3` → Provider `Cloudflare`. Paste the keys + endpoint. Then set `no_check_bucket = true` (otherwise rclone tries `CreateBucket` on each upload and gets 403):
+
    ```sh
    rclone config update r2 no_check_bucket true
    ```
 
 Bucket layout after upload:
+
 ```
 cassini-hillshade/
 ├── lakes.json                    51 MB
@@ -269,10 +260,12 @@ Input: a merged GeoTIFF DEM covering Norway (e.g. `dem_merged.tif`).
 ```
 
 What it does ([scripts/dem-to-tiles.sh](scripts/dem-to-tiles.sh)):
+
 1. `gdaldem hillshade -multidirectional -compute_edges` — multi-directional shaded relief.
 2. `gdal2tiles.py --xyz --processes=4 -z 7-13 -r bilinear` — XYZ tile pyramid, zoom 7 (country) through 13 (street).
 
 Upload:
+
 ```sh
 rclone sync tiles r2:cassini-hillshade --transfers 32 --progress --exclude lakes.json
 ```
@@ -290,6 +283,7 @@ Drop into `data/EU-Hydro.json` (gitignored — it's ~1.8 GB).
 ```
 
 What it does ([scripts/euhydro-to-lakes.sh](scripts/euhydro-to-lakes.sh)):
+
 1. `ogr2ogr -f GeoJSON -where "LAKID IS NOT NULL" -select OBJECTID,NAM,AREA,ALTITUDE,LAKID,LKE_TYPE -simplify 0.0005 -lco RFC7946=YES -lco WRITE_BBOX=YES`
    - Filters 341 k mixed features (rivers/lakes/basins/dams) down to **~87 k lakes**.
    - Drops noise attributes; keeps only what the app uses.
@@ -298,11 +292,13 @@ What it does ([scripts/euhydro-to-lakes.sh](scripts/euhydro-to-lakes.sh)):
 2. Copies output into `tiles/lakes.json` so the local Python http server picks it up automatically (dev fallback when `EXPO_PUBLIC_LAKES_URL` is unset).
 
 Upload:
+
 ```sh
 rclone copyto tiles/lakes.json r2:cassini-hillshade/lakes.json --progress
 ```
 
 Tweak knobs:
+
 ```sh
 MIN_AREA_M2=1000000 ./scripts/euhydro-to-lakes.sh   # only lakes ≥ 1 km²
 SIMPLIFY_DEG=0.001 ./scripts/euhydro-to-lakes.sh    # coarser geometry
@@ -353,14 +349,17 @@ SIMPLIFY_DEG=0.001 ./scripts/euhydro-to-lakes.sh    # coarser geometry
 ## App flows
 
 ### Authentication
+
 1. App boots → `(tabs)/_layout.tsx` checks `useSession()`.
 2. No session → `<Redirect href="/login" />`.
 3. User enters demo email/password → `signInWithEmail` → if first sign-in, `ensureProfile` upserts a row in `profiles` with a deterministic colour from a 7-colour palette.
 
 ### Rate a lake (lightweight, anyone signed in)
+
 - Tap polygon → `ClaimSheet` opens → tap **Rate** → `RatingModal` → 1–5 stars → `rateLake` `UPSERT`s into `lake_ratings`. The aggregate appears in the sheet via `lake_rating_summary`.
 
 ### Claim a lake (verified workflow)
+
 1. Tap polygon → `ClaimSheet` → **Test water & claim**.
 2. `router.push('/claim-verify?lake_id=…')` → instructions screen.
 3. **Open scanner** → `expo-camera` → user points at any QR → `onBarcodeScanned`.
@@ -370,6 +369,7 @@ SIMPLIFY_DEG=0.001 ./scripts/euhydro-to-lakes.sh    # coarser geometry
 7. Realtime subscription (`useActiveClaims`) re-fetches → polygon recolours on map. Row moves: Verification → My Claims. Leaderboard `+1`.
 
 ### Capture-the-flag
+
 - Anyone scanning a lake replaces the existing claim (the RPC's `ON CONFLICT DO UPDATE`).
 - Their `status` resets to `pending`. The previous owner's claim is gone (the lake reverts to "unclaimed" on the map until the new request is verified).
 
