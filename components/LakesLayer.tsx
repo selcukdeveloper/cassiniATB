@@ -22,11 +22,6 @@ export type LakeFeature = {
     | { type: 'MultiPolygon'; coordinates: number[][][][] };
 };
 
-// Lakes URL resolution mirrors HILLSHADE_TILE_URL in OSMMap.tsx:
-//   1. EXPO_PUBLIC_LAKES_URL (e.g. Cloudflare R2 https URL) for any non-laptop net
-//   2. fall back to `http://<expo-bundler-host>:8000/lakes.json` so the Python
-//      tile server we already run for hillshade can serve the GeoJSON too
-//   3. null → no fetch, no polygons
 const hostedLakesUrl = process.env.EXPO_PUBLIC_LAKES_URL;
 const devHost = Constants.expoConfig?.hostUri?.split(':')[0];
 const LAKES_URL = hostedLakesUrl
@@ -142,9 +137,6 @@ export default function LakesLayer({
     return () => {
       cancelled = true;
     };
-    // onLoadStateChange isn't in deps because it's a stable setter from the parent;
-    // listing it would re-fetch on every parent render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const featuresByArea = useMemo(() => {

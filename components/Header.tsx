@@ -12,7 +12,7 @@ export default function Header({ onFindWater, onTestWater, onSettings }: Props) 
   return (
     <SafeAreaView edges={['top']} style={styles.safe}>
       <View style={styles.banner}>
-        <Text style={styles.title}>CassiniATB</Text>
+        <Text style={styles.title}>MarinersATB</Text>
         <View style={styles.buttons}>
           {onSettings && (
             <Pressable style={[styles.btn, styles.btnSettings]} onPress={onSettings}>
