@@ -10,14 +10,12 @@ import {
 
 type Props = {
   visible: boolean;
-  lakeLabel: string | null; // e.g. "Lake OE00073164"
-  initialStars: number | null; // your existing rating, if any
+  lakeLabel: string | null; // TO:DO: instead of using lake labels like "Lake OE00073164" from EU-Hydro data, match lake names to exact names
+  initialStars: number | null; // User ratings for drinkability
   onSubmit: (stars: number) => Promise<void> | void;
   onClose: () => void;
 };
 
-// Lightweight star picker — for general "drinkability" feedback, separate from
-// the verified claim flow. Anyone signed in can rate any lake.
 export default function RatingModal({
   visible,
   lakeLabel,
@@ -28,7 +26,6 @@ export default function RatingModal({
   const [stars, setStars] = useState<number>(initialStars ?? 0);
   const [busy, setBusy] = useState(false);
 
-  // Reset local state when the modal opens for a different lake.
   React.useEffect(() => {
     if (visible) setStars(initialStars ?? 0);
   }, [visible, initialStars]);
