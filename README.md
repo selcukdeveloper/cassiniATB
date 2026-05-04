@@ -1,8 +1,8 @@
-# CassiniATB
+# MarinersATB
 
 Capture-the-flag for Norway's water bodies. Scan a kit's QR at a lake, send a verification request, climb the leaderboard once it's approved.
 
-Built for the **Cassini Hackathon** — uses Copernicus DEM and Copernicus EU-Hydro as the backing geographic data.
+Originally built for the **Cassini Hackathon** — uses Copernicus DEM and Copernicus EU-Hydro as the backing geographic data.
 
 ---
 
@@ -117,7 +117,7 @@ Row-Level Security lets anyone `SELECT` and only authenticated users `INSERT` ro
                 │             rclone sync               │
                 ▼                                       ▼
        ┌──────────────────────────────────────────────────────┐
-       │  Cloudflare R2 · cassini-hillshade · pub-*.r2.dev   │
+       │  Cloudflare R2 · mariners-hillshade · pub-*.r2.dev   │
        └──────────────────────────────────────────────────────┘
                                 │
                                 │  HTTPS (public reads)
@@ -137,7 +137,7 @@ Row-Level Security lets anyone `SELECT` and only authenticated users `INSERT` ro
 
 The notebook imports helpers from `src/bbox.py` and `src/dem.py`, which live in a sibling Python project — not in this repo.
 
-### 2. Hillshade tiles (optional, currently not rendered)
+### 2. Hillshade tiles
 
 ```sh
 ./scripts/dem-to-tiles.sh path/to/dem_merged.tif
@@ -147,10 +147,23 @@ The notebook imports helpers from `src/bbox.py` and `src/dem.py`, which live in 
 - `gdaldem hillshade -multidirectional -compute_edges` — multi-directional shaded relief
 - `gdal2tiles.py --xyz --processes=4 -z 7-13 -r bilinear` — XYZ tile pyramid
 
+Rendered natively in [`components/OSMMap.tsx`](components/OSMMap.tsx) via `<UrlTile>`. Hillshade is the *only* basemap — Apple/Google's basemap is suppressed so the hillshade isn't fighting it for pixels:
+
+- **Android (Google Maps):** `mapType="none"` hides Google's basemap.
+- **iOS (Apple Maps):** `MKMapType` has no `none`; we use `shouldReplaceMapContent={true}` on the `<UrlTile>` instead. Since react-native-maps 1.7.0 the overlay is added at `MKOverlayLevelAboveLabels`, so even Apple's labels stay hidden behind our tiles.
+
+URL config (in `.env`, picked up by Metro at bundle time):
+
+```env
+EXPO_PUBLIC_HILLSHADE_URL=https://pub-XXXXXXXX.r2.dev/{z}/{x}/{y}.png
+```
+
+After editing `.env` you must `npx expo start --clear` — Metro inlines `EXPO_PUBLIC_*` constants at bundle time, so an old bundle keeps the old (or missing) value.
+
 Upload to R2:
 
 ```sh
-rclone sync tiles r2:cassini-hillshade --transfers 32 --progress --exclude lakes.json
+rclone sync tiles r2:mariners-hillshade --transfers 32 --progress --exclude lakes.json
 ```
 
 ### 3. EU-Hydro lakes
@@ -169,7 +182,7 @@ Download the EU-Hydro River Network Database (`NUTS = Norge`) from the [Copernic
 Upload:
 
 ```sh
-rclone copyto tiles/lakes.json r2:cassini-hillshade/lakes.json --progress
+rclone copyto tiles/lakes.json r2:mariners-hillshade/lakes.json --progress
 ```
 
 Knobs: `MIN_AREA_M2=1000000` for lakes ≥ 1 km², `SIMPLIFY_DEG=0.001` for coarser geometry.
@@ -178,12 +191,12 @@ Knobs: `MIN_AREA_M2=1000000` for lakes ≥ 1 km², `SIMPLIFY_DEG=0.001` for coar
 
 ## Cloudflare R2
 
-Bucket: `cassini-hillshade`. Public read enabled via "R2.dev subdomain" → URL `https://pub-XXXX.r2.dev`.
+Bucket: `mariners-hillshade`. Public read enabled via "R2.dev subdomain" → URL `https://pub-XXXX.r2.dev`.
 
 Layout:
 
 ```
-cassini-hillshade/
+mariners-hillshade/
 ├── lakes.json
 ├── 7/66/38.png
 ├── 7/66/39.png
@@ -206,14 +219,15 @@ rclone config: provider `Cloudflare`, paste S3 endpoint + access keys, then `rcl
 ### Setup
 
 ```sh
-git clone https://github.com/selcukdeveloper/cassiniATB.git
-cd cassiniATB
+git clone https://github.com/selcukdeveloper/marinersATB.git
+cd marinersATB
 npm install
 ```
 
 Create `.env` (gitignored — never commit):
 
 ```env
+EXPO_PUBLIC_HILLSHADE_URL=https://pub-XXXXXXXX.r2.dev/{z}/{x}/{y}.png
 EXPO_PUBLIC_LAKES_URL=https://pub-XXXXXXXX.r2.dev/lakes.json
 EXPO_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT-REF.supabase.co
 EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
