@@ -18,7 +18,7 @@ type Props = {
   lake: LakeFeature | null;
   // Most recent claim on this lake, if any (owner info + status).
   claim: ClaimWithOwner | null;
-  // Current user id, so we know whether the claim is "mine".
+  // Current user id
   myUserId: string | null;
   onClose: () => void;
   // Open the star-rating modal for this lake.
@@ -80,8 +80,6 @@ export default function ClaimSheet({
               <Text style={styles.rateBtnText}>Rate</Text>
             </Pressable>
           </View>
-
-          {/* Claim status card */}
           {claim ? (
             <View style={styles.claimCard}>
               <View style={styles.ownerRow}>
@@ -107,7 +105,6 @@ export default function ClaimSheet({
             </View>
           )}
 
-          {/* Single action: scan to capture (always succeeds, status='pending') */}
           <Pressable
             style={[styles.button, styles.claimButton]}
             onPress={handleStartClaim}
