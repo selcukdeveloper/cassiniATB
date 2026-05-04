@@ -41,8 +41,8 @@ export default function Login() {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <Text style={styles.title}>CassiniATB</Text>
-      <Text style={styles.subtitle}>Claim Norway&apos;s waters.</Text>
+      <Text style={styles.title}>MarinersATB</Text>
+      <Text style={styles.subtitle}>Claim the waters!</Text>
 
       {!isSupabaseConfigured && (
         <View style={styles.errorBox}>
