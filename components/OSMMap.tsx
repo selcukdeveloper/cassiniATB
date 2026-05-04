@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import MapView, { Region } from 'react-native-maps';
+import { Platform, StyleSheet, View } from 'react-native';
+import MapView, { Region, UrlTile } from 'react-native-maps';
 import * as Location from 'expo-location';
 import React from 'react';
 
@@ -10,6 +10,9 @@ const KRISTIANSAND: Region = {
   latitudeDelta: 0.05,
   longitudeDelta: 0.05,
 };
+const HILLSHADE_TILE_URL = process.env.EXPO_PUBLIC_HILLSHADE_URL ?? null;
+
+const HILLSHADE_MAX_Z = 13;
 
 type Props = {
   initialRegion?: Region;
@@ -31,17 +34,27 @@ export default function OSMMap({
     })();
   }, []);
 
+  const mapType =
+    Platform.OS === 'android' && HILLSHADE_TILE_URL ? 'none' : 'standard';
+
   return (
     <View style={StyleSheet.absoluteFill}>
       <MapView
         style={StyleSheet.absoluteFill}
         initialRegion={initialRegion}
-        mapType="standard"
+        mapType={mapType}
         rotateEnabled
         showsUserLocation={showUserLocation}
         showsMyLocationButton={showUserLocation}
         onRegionChangeComplete={onRegionChange}
       >
+        {HILLSHADE_TILE_URL && (
+          <UrlTile
+            urlTemplate={HILLSHADE_TILE_URL}
+            maximumZ={HILLSHADE_MAX_Z}
+            flipY={false}
+          />
+        )}
         {children}
       </MapView>
     </View>
