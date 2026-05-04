@@ -13,29 +13,23 @@ import { useSession } from '../lib/auth';
 import { claimLake } from '../lib/claims';
 import { lakeLabel } from '../lib/lake-display';
 
-// Three-step screen: instructions → camera scanner → success.
-// QR contents are not validated for the demo — any scanned code completes the
-// claim. (Replace with allowlist / signed token check for production.)
 type Stage = 'instructions' | 'scanning' | 'submitting' | 'done';
 
 export default function ClaimVerify() {
   const params = useLocalSearchParams<{ lake_id?: string }>();
   const lakeId = params.lake_id ?? null;
-  useSession(); // ensure auth gate awareness; we don't use the session here directly
+  useSession();
 
   const [stage, setStage] = useState<Stage>('instructions');
   const [error, setError] = useState<string | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
 
   const handleScanned = async ({ data }: { data: string }) => {
-    if (stage !== 'scanning') return; // ignore burst events
+    if (stage !== 'scanning') return;
     setStage('submitting');
     setError(null);
     try {
       if (!lakeId) throw new Error('Missing lake_id route param');
-      // Pass the scanned QR contents through to the RPC so it's stored as the
-      // verification token on the water_claims row. Whatever string the QR
-      // encodes becomes the unique key for tracking this claim.
       await claimLake(lakeId, data);
       console.log('[claim-verify] scanned QR contents:', data);
       setStage('done');
@@ -53,7 +47,6 @@ export default function ClaimVerify() {
     );
   }
 
-  // ---------- Instructions screen ----------
   if (stage === 'instructions' || stage === 'submitting') {
     return (
       <View style={styles.container}>
@@ -68,12 +61,11 @@ export default function ClaimVerify() {
         <View style={styles.body}>
           <Text style={styles.lakeName}>{lakeLabel(lakeId)}</Text>
           <Text style={styles.steps}>
-            1.  Take your CassiniATB test kit and go to the water.{'\n'}
-            2.  Run the test according to the instructions on the kit package.{'\n'}
-            3.  Scan the QR code on the kit to validate the test.{'\n'}
-            4.  Upload a photo of the results and claim the lake in the app.{'\n\n'}
-            Note: The QR code is unique to each kit and can only be used once. Don&apos;t
-            throw away the kit until you see your claim in the app!
+            1- Bring your marinersATB test kit to the water.{'\n'}
+            2- Perform the test following the instructions on the kit package.{'\n'}
+            3- Scan the QR code on the kit to verify the test.{'\n'}
+            4- Upload a photo of the results and submit your claim in the app.{'\n\n'}
+            Note: Each QR code is unique and can only be used once. Don't discard the kit until your claim appears in the app!
           </Text>
 
           {error && (
@@ -110,7 +102,6 @@ export default function ClaimVerify() {
     );
   }
 
-  // ---------- Camera / scanner screen ----------
   if (stage === 'scanning') {
     return (
       <View style={styles.cameraContainer}>
@@ -130,14 +121,13 @@ export default function ClaimVerify() {
           </View>
           <View style={styles.targetFrame} />
           <Text style={styles.cameraHint}>
-            Point the camera at the QR code on your CassiniATB test kit.
+            Point the camera at the QR code on your marinersATB test kit.
           </Text>
         </View>
       </View>
     );
   }
 
-  // ---------- Done screen ----------
   return (
     <View style={styles.container}>
       <View style={styles.body}>
@@ -145,8 +135,7 @@ export default function ClaimVerify() {
         <Text style={styles.lakeName}>{lakeLabel(lakeId)}</Text>
         <Text style={styles.success}>Verification request sent</Text>
         <Text style={styles.successSub}>
-          Your scan has been recorded. You&apos;ll see it in My Claims with
-          &ldquo;Waiting for verification&rdquo; until it&apos;s reviewed.
+          Your scan has been recorded. Once the claim is verified and approved, it will appear in the app for everyone to see. You can submit a photo and rating to share more about the water quality at this lake!
         </Text>
         <Pressable style={styles.primary} onPress={() => router.replace('/(tabs)')}>
           <Text style={styles.primaryText}>Back to map</Text>
