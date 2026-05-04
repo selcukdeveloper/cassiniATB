@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "CassiniATB",
-    "slug": "cassini-atb",
+    "name": "MarinersATB",
+    "slug": "mariners-atb",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "cassiniatb",
+    "scheme": "marinersatb",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
