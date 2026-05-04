@@ -80,7 +80,7 @@ echo "Now served locally at  http://<your-lan-ip>:8000/lakes.json"
 echo "(make sure ./tiles/ is the cwd of your python http.server)"
 echo
 echo "To deploy to Cloudflare R2 (overrides the local fallback):"
-echo "  rclone copyto $SERVE_PATH r2:cassini-hillshade/lakes.json --progress"
+echo "  rclone copyto $SERVE_PATH r2:mariners-hillshade/lakes.json --progress"
 echo "Then add to .env in the project root:"
 echo "  EXPO_PUBLIC_LAKES_URL=https://pub-32986430b7e441f49e3dd785e13ad9e4.r2.dev/lakes.json"
 echo "Then:  npx expo start --clear"
